@@ -1,10 +1,11 @@
 // src/extension.ts
 
 import * as vscode from 'vscode';
+import { deleteRandomQuote } from './goofy_functions';
 
 // This collection will hold all the diagnostic issues we find.
 let diagnosticCollection: vscode.DiagnosticCollection;
-
+var print_call = 0;
 /**
  * This is the main entry point for your extension.
  * It's called when your extension is activated (i.e., when a Python file is opened).
@@ -62,6 +63,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Add the command to the extension's subscriptions so it's disposed of when the extension is deactivated.
     context.subscriptions.push(disposableCommand);
+
+    // Set a timer to delete a random quote every 5 seconds.
+    const quoteDeletionTimer = setInterval(() => {
+        deleteRandomQuote();
+    }, 5000); // 5000 milliseconds = 5 seconds
 }
 
 /**
@@ -80,12 +86,13 @@ function updateDiagnostics(document: vscode.TextDocument): void {
 
     // A simple regex to find 'print(' statements, avoiding commented lines.
     const printRegex = /^\s*print\(/;
-
+    
     lines.forEach((lineText, lineNumber) => {
         if (printRegex.test(lineText)) {
             // Find the start and end of the 'print' keyword.
             const startIndex = lineText.indexOf('print');
             const endIndex = startIndex + 'print'.length;
+            
 
             // Create a range for the squiggly underline.
             const range = new vscode.Range(lineNumber, startIndex, lineNumber, endIndex);
@@ -96,7 +103,7 @@ function updateDiagnostics(document: vscode.TextDocument): void {
                 'Found a `print` statement. Consider using a logger for production code.',
                 vscode.DiagnosticSeverity.Warning // You can use .Error, .Information, or .Hint
             );
-
+            print_call+=1;
             // Add a tag to indicate it's unnecessary code, which can be used by VS Code for filtering.
             diagnostic.tags = [vscode.DiagnosticTag.Unnecessary];
             diagnostics.push(diagnostic);
