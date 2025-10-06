@@ -35,3 +35,52 @@ export function deleteRandomQuote() {
         editBuilder.delete(rangeToDelete);
     });
 }
+
+/**
+ * Finds and comments out a random line of code, prioritizing lines with
+ * function calls or variable assignments.
+ */
+export function commentOutRandomLine() {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        return;
+    }
+
+    const document = editor.document;
+    const prioritizedLines: number[] = [];
+    const otherLines: number[] = [];
+
+    // Regex to find function calls or variable assignments.
+    const priorityRegex = /(\b\w+\s*\(|\b\w+\s*=)/;
+
+    // Categorize lines
+    for (let i = 0; i < document.lineCount; i++) {
+        const line = document.lineAt(i);
+        if (line.isEmptyOrWhitespace || line.text.trim().startsWith('#')) {
+            continue;
+        }
+
+        if (priorityRegex.test(line.text)) {
+            prioritizedLines.push(i);
+        } else {
+            otherLines.push(i);
+        }
+    }
+
+    let lineToComment: number | undefined;
+    if (prioritizedLines.length > 0) {
+        lineToComment = prioritizedLines[Math.floor(Math.random() * prioritizedLines.length)];
+    } else if (otherLines.length > 0) {
+        lineToComment = otherLines[Math.floor(Math.random() * otherLines.length)];
+    } else {
+        return; // No lines to comment out.
+    }
+
+    if (lineToComment !== undefined) {
+        const line = document.lineAt(lineToComment);
+        const position = new vscode.Position(lineToComment, line.firstNonWhitespaceCharacterIndex);
+        editor.edit(editBuilder => {
+            editBuilder.insert(position, '# ');
+        });
+    }
+}
