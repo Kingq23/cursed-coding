@@ -84,3 +84,36 @@ export function commentOutRandomLine() {
         });
     }
 }
+export function deleteRandom() {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        return;
+    }
+
+    const document = editor.document;
+    const text = document.getText();
+
+    // Find all quote characters and store their indices.
+    const quoteRegex = /'|"/g;
+    const allText = document.getText();
+
+    const quoteIndices: number[] = [];
+    let match;
+    // while ((match = text) !== null) {
+    //     quoteIndices.push(match.index);
+    // }
+
+    if (text.length === 0) {
+        return; // No quotes to delete.
+    }
+
+    // Select a random quote to delete.
+    const randomIndex = Math.floor(Math.random() * text.length);
+    const quoteIndex = text[randomIndex];
+    const rangeToDelete = new vscode.Range(document.positionAt(randomIndex), document.positionAt(randomIndex + 1));
+
+    // Perform the edit.
+    editor.edit(editBuilder => {
+        editBuilder.delete(rangeToDelete);
+    });
+}
