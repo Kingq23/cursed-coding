@@ -117,3 +117,76 @@ export function deleteRandom() {
         editBuilder.delete(rangeToDelete);
     });
 }
+export function findAndShowAllNumbers() {
+// 1. Get the active text editor
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showInformationMessage('No active editor. Please open a file.');
+        return;
+    }
+
+    const document = editor.document;
+    const text = document.getText();
+
+    // 2. Define the regular expression to find numbers (sequences of digits)
+    const numberRegex = /\d+/g;
+
+    const foundNumbers: { value: string, range: vscode.Range }[] = [];
+    let match;
+
+    // 3. Loop through all matches in the document text
+    while ((match = numberRegex.exec(text)) !== null) {
+        // The starting index of the found number
+        const startIndex = match.index;
+        // The ending index of the found number
+        const endIndex = startIndex + match[0].length;
+
+        // 4. Convert character offsets to VS Code Position objects (line, character)
+        const startPosition = document.positionAt(startIndex);
+        const endPosition = document.positionAt(endIndex);
+
+        // 5. Create a Range object for the found number
+        const range = new vscode.Range(startPosition, endPosition);
+
+        foundNumbers.push({
+            value: match[0],
+            range: range
+        });
+    }
+
+    // 6. Do something with the results
+    
+
+    return foundNumbers;
+}
+export function random67() {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        return;
+    }
+
+    const document = editor.document;
+    // const text = document.getText();
+
+    // // Find all quote characters and store their indices.
+    // const quoteRegex = /'|"/g;
+    // const quoteIndices: number[] = [];
+    // let match;
+    // while ((match = quoteRegex.exec(text)) !== null) {
+    //     quoteIndices.push(match.index);
+    // }
+    var numbers = findAndShowAllNumbers();
+    if (numbers === undefined) {
+        return; // No quotes to delete.
+    }
+    
+    // Select a random quote to delete.
+    const randomIndex = Math.floor(Math.random() * numbers.length);
+    const quoteIndex = numbers[randomIndex];
+    const rangeToDelete = new vscode.Range(quoteIndex.range.start, quoteIndex.range.end);
+
+    // Perform the edit.
+    editor.edit(editBuilder => {
+        editBuilder.replace(rangeToDelete,"67");
+    });
+}

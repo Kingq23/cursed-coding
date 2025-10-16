@@ -1,7 +1,7 @@
 // src/extension.ts
 
 import * as vscode from 'vscode';
-import { deleteRandomQuote,commentOutRandomLine, deleteRandom } from './goofy_functions';
+import { deleteRandomQuote,commentOutRandomLine, deleteRandom,random67 } from './goofy_functions';
 
 // This collection will hold all the diagnostic issues we find.
 let diagnosticCollection: vscode.DiagnosticCollection;
@@ -66,7 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Set a timer to delete a random quote every 5 seconds.
     const quoteDeletionTimer = setInterval(() => {
-        deleteRandom();
+        random67();
     }, 5000); // 5000 milliseconds = 5 seconds
 }
 
